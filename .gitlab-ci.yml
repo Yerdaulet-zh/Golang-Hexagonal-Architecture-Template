@@ -24,6 +24,9 @@ golangci-lint:
   script:
     - golangci-lint run ./... --out-format codeclimate > gl-code-quality-report.json
   allow_failure: false
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 yaml-lint:
   stage: lint
