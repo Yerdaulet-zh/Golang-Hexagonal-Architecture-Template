@@ -1,3 +1,4 @@
+---
 stages:
   - lint
   - validate
@@ -7,7 +8,10 @@ lint-yaml:
   image: python:3.10-slim
   script:
     - pip install yamllint
+    - echo "Starting to lint docker-compose.yml file"
     - yamllint docker-compose.yml
+    - echo "Starting to lint the .gtilab-ci.yml"
+    - yamllint .gtilab-ci.yml
 
 validate-compose:
   stage: validate
@@ -17,4 +21,3 @@ validate-compose:
   script:
     - docker compose config -q
     - echo "Docker Compose file is valid!"
-  
