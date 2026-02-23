@@ -10,8 +10,10 @@ lint-yaml:
     - pip install yamllint
     - echo "Starting to lint docker-compose.yml file"
     - yamllint docker-compose.yml
-    - echo "Starting to lint the .gtilab-ci.yml"
+    - echo "Starting to lint the .gtilab-ci.yml file"
     - yamllint .gtilab-ci.yml
+    - echo "Starting to lint .golangci.yml file"
+    - yamllint .golangci.yml
 
 validate-compose:
   stage: validate
