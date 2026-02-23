@@ -4,6 +4,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -15,10 +17,14 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	logger := logging.NewStdoutLogger()
-	mapManagementRoutes := servers.MapManagementRoutes(logger)
-
-	if err := servers.Run(ctx, logger, mapManagementRoutes, ":2112", "Management"); err != nil {
-		logger.Error("HTTP Management server error while shutting down", "error", err)
+	if err := run(ctx); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
 	}
+}
+
+func run(ctx context.Context) error {
+	logger := logging.NewStdoutLogger()
+	routes := servers.MapManagementRoutes(logger)
+	return servers.Run(ctx, logger, routes, ":2112", "Management")
 }
