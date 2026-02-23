@@ -1,23 +1,54 @@
 ---
+include:
+  - component: $CI_SERVER_FQDN/components/code-quality-oss/codequality-os-scanners-integration/golangci@1.0.1
+
 stages:
   - lint
   - validate
+  - test
 
-lint-yaml:
+variables:
+  GOLANGCI_LINT_VERSION: "v2.10.1"
+  GOPATH: $CI_PROJECT_DIR/.go
+  GOLANGCI_LINT_CACHE: $CI_PROJECT_DIR/.cache/golangci-lint
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .go/pkg/mod
+    - .cache/golangci-lint
+
+golangci-lint:
   stage: lint
-  image: python:3.10-slim
+  image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
-    - pip install yamllint
-    - echo "Starting to lint docker-compose.yml file"
-    - yamllint docker-compose.yml
-    - echo "Starting to lint the .gtilab-ci.yml"
-    - yamllint .gtilab-ci.yml
+    - golangci-lint run ./... --output.code-climate.path=gl-code-quality-report.json
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
-validate-compose:
+yaml-lint:
+  stage: lint
+  image: python:alpine
+  script:
+    - apk add --no-cache yamllint
+    - yamllint docker-compose.yml .gitlab-ci.yml
+
+validate-docker:
   stage: validate
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
   script:
     - docker compose config -q
-    - echo "Docker Compose file is valid!"
+
+test-go:
+  stage: test
+  image: golang:1.26-alpine
+  variables:
+    CGO_ENABLED: "1"
+  script:
+    - apk add --no-cache build-base
+    - go mod download
+    - go fix ./...
+    - go test -v -race -cover ./...

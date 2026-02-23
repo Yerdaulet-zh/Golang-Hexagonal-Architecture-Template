@@ -1,0 +1,53 @@
+---
+version: "2"
+
+run:
+  timeout: 5m
+  go: "1.26"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - copyloopvar
+    - bodyclose
+    - nilerr
+    - gosec
+    - prealloc
+    - gocyclo
+    - revive
+    - unconvert
+    - unused
+    - whitespace
+    - goconst
+    - misspell
+
+  exclusions:
+    paths:
+      - vendor
+      - test/testdata
+
+  settings:
+    govet:
+      enable-all: true
+    revive:
+      rules:
+        - name: var-naming
+          arguments: [["ID", "URL", "HTTP", "API"]]
+        - name: package-comments
+        - name: exported
+    gocyclo:
+      min-complexity: 15
+
+formatters:
+  enable:
+    - gofmt
+  settings:
+    gofmt:
+      simplify: true
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
