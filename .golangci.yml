@@ -1,3 +1,4 @@
+---
 version: "2"
 
 run:
@@ -5,7 +6,7 @@ run:
   go: "1.26"
 
 linters:
-  default: none 
+  default: none
   enable:
     - errcheck
     - govet
