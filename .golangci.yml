@@ -21,7 +21,7 @@ linters:
     - unused
     - whitespace
     - goconst
-    # Removed gofmt and misspell from here
+    - misspell
 
   exclusions:
     paths:
@@ -43,7 +43,6 @@ linters:
 formatters:
   enable:
     - gofmt
-    - misspell
   settings:
     gofmt:
       simplify: true
