@@ -1,26 +1,45 @@
----
-version: "2.0"
+version: "2"
 
 run:
   timeout: 5m
-  modules-download-mode: readonly
+  go: "1.26"
 
 linters:
-  disable-all: true
+  default: none 
   enable:
     - errcheck
     - govet
     - staticcheck
-    - revive
-    - gosec
+    - copyloopvar
     - bodyclose
-    - whitespace
+    - nilerr
+    - gosec
+    - prealloc
+    - gocyclo
+    - revive
+    - unconvert
     - unused
+    - whitespace
+    - goconst
+    - gofmt
+    - misspell
 
-linters-settings:
-  govet:
-    check-shadowing: true
-  revive:
-    rules:
-      - name: var-naming
-        arguments: [["ID", "URL", "HTTP", "API"]]
+  exclusions:
+    paths:
+      - config
+
+  settings:
+    govet:
+      enable-all: true
+    revive:
+      rules:
+        - name: var-naming
+          arguments: [["ID", "URL", "HTTP", "API"]]
+        - name: package-comments
+        - name: exported
+    gocyclo:
+      min-complexity: 15
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
