@@ -1,4 +1,7 @@
 ---
+include:
+  - component: $CI_SERVER_FQDN/components/code-quality-oss/codequality-os-scanners-integration/golangci@1.0.1
+
 stages:
   - lint
   - validate
@@ -6,22 +9,25 @@ stages:
 
 variables:
   GOLANGCI_LINT_VERSION: "v1.64.0"
+  GOPATH: $CI_PROJECT_DIR/.go
+  GOLANGCI_LINT_CACHE: $CI_PROJECT_DIR/.cache/golangci-lint
 
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .cache/go-build
+    - .go/pkg/mod
     - .cache/golangci-lint
 
-lint:
+golangci-lint:
   stage: lint
-  image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}-alpine
+  image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
-    # Run the Go meta-linter
-    - golangci-lint run ./...
-    
-    # Lint YAML/CI files
+    - golangci-lint run ./... --out-format code-climate > gl-code-quality-report.json
     - apk add --no-cache yamllint
     - yamllint docker-compose.yml .gitlab-ci.yml
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 validate-docker:
   stage: validate
@@ -30,10 +36,10 @@ validate-docker:
     - docker:24.0.5-dind
   script:
     - docker compose config -q
-    - echo "Docker Compose file is valid!"
 
 test-go:
   stage: test
   image: golang:1.26-alpine
   script:
+    - go fix ./...
     - go test -v -race -cover ./...
