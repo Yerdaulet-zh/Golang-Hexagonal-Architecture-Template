@@ -22,7 +22,7 @@ golangci-lint:
   stage: lint
   image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
-    - golangci-lint run ./... --output.code-climate.path=gl-code-quality-report.json
+    - golangci-lint run ./... --exit-code
   artifacts:
     reports:
       codequality: gl-code-quality-report.json
