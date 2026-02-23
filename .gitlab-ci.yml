@@ -44,5 +44,6 @@ test-go:
     CGO_ENABLED: "1"
   script:
     - apk add --no-cache build-base
+    - go mod download
     - go fix ./...
     - go test -v -race -cover ./...
