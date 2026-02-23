@@ -1,3 +1,4 @@
+// Package logging provides implementations for system logging adapters.
 package logging
 
 import (
@@ -7,10 +8,14 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
+// stdoutAdapter is an internal implementation of the ports.Logger interface
+// that writes logs to standard output in JSON format.
 type stdoutAdapter struct {
 	logger *slog.Logger
 }
 
+// NewStdoutLogger initializes and returns a new Logger that outputs to stdout.
+// It uses slog's JSONHandler for structured logging.
 func NewStdoutLogger() ports.Logger {
 	handler := slog.NewJSONHandler(os.Stdout, nil)
 	return &stdoutAdapter{

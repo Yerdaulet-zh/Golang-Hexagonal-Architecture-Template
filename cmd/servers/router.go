@@ -1,3 +1,4 @@
+// Package servers provides HTTP or gRPC compatible servers to serve client requests.
 package servers
 
 import (
@@ -8,6 +9,7 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
+// MapManagementRoutes maps management-related routes (health checks, metrics) to their handlers.
 func MapManagementRoutes(logger ports.Logger) http.Handler {
 	mux := http.NewServeMux()
 
