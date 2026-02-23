@@ -1,4 +1,4 @@
-// run and manage HTTP servers. test
+// Package servers provides functionality to run and manage HTTP servers.
 package servers
 
 import (
