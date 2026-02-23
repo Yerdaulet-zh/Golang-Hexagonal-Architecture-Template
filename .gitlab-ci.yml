@@ -40,6 +40,9 @@ validate-docker:
 test-go:
   stage: test
   image: golang:1.26-alpine
+  variables:
+    CGO_ENABLED: "1"
   script:
+    - apk add --no-cache build-base
     - go fix ./...
     - go test -v -race -cover ./...
