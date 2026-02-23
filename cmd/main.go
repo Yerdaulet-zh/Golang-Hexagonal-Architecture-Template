@@ -2,8 +2,24 @@
 // It initializes the core services and starts the gRPC, HTTP runtime.
 package main
 
-import "fmt"
+import (
+	"context"
+	"os/signal"
+	"syscall"
+
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/cmd/servers"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/logging"
+)
 
 func main() {
-	fmt.Print("Golang project init successful!")
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+
+	logger := logging.NewStdoutLogger()
+	mapManagementRoutes := servers.MapManagementRoutes(logger)
+
+	if err := servers.Run(ctx, logger, mapManagementRoutes, ":2112", "Management"); err != nil {
+		logger.Error("HTTP Management server error while shutting down", "error", err)
+	}
+
 }
