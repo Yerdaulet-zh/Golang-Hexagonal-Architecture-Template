@@ -21,5 +21,4 @@ func main() {
 	if err := servers.Run(ctx, logger, mapManagementRoutes, ":2112", "Management"); err != nil {
 		logger.Error("HTTP Management server error while shutting down", "error", err)
 	}
-
 }
