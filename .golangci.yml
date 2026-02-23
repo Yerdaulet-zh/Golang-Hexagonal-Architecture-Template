@@ -21,12 +21,12 @@ linters:
     - unused
     - whitespace
     - goconst
-    - gofmt
-    - misspell
+    # Removed gofmt and misspell from here
 
   exclusions:
     paths:
-      - config
+      - vendor
+      - test/testdata
 
   settings:
     govet:
@@ -39,6 +39,14 @@ linters:
         - name: exported
     gocyclo:
       min-complexity: 15
+
+formatters:
+  enable:
+    - gofmt
+    - misspell
+  settings:
+    gofmt:
+      simplify: true
 
 issues:
   max-issues-per-linter: 0
