@@ -22,7 +22,7 @@ golangci-lint:
   stage: lint
   image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
-    - golangci-lint run ./... --out-format code-climate > gl-code-quality-report.json
+    - golangci-lint run ./... --output.code-climate.path=gl-code-quality-report.json
     - apk add --no-cache yamllint
     - yamllint docker-compose.yml .gitlab-ci.yml
   artifacts:
