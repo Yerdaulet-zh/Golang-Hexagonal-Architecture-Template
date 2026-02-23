@@ -1,4 +1,4 @@
-// This is designed to run http servers via net/http library
+// Package servers provides functionality to run and manage HTTP servers.
 package servers
 
 import (
@@ -10,7 +10,7 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
-// The function is designed to handle the bussiness and management HTTP servers
+// Run handles the business and management HTTP servers, supporting graceful shutdown.
 func Run(ctx context.Context, logger ports.Logger, handler http.Handler, addr string, serverName string) error {
 	s := &http.Server{
 		Addr:           addr,
