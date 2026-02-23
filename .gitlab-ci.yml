@@ -22,7 +22,7 @@ golangci-lint:
   stage: lint
   image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
-    - golangci-lint run ./...
+    - golangci-lint run ./... --out-format codeclimate > gl-code-quality-report.json
   allow_failure: false
 
 yaml-lint:
