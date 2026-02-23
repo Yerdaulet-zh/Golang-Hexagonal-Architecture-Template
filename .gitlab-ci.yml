@@ -23,6 +23,7 @@ golangci-lint:
   image: golangci/golangci-lint:${GOLANGCI_LINT_VERSION}
   script:
     - golangci-lint run ./...
+  allow_failure: false
 
 yaml-lint:
   stage: lint
