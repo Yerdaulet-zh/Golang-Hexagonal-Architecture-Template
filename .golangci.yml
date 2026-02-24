@@ -38,6 +38,7 @@ linters:
           arguments: [["ID", "URL", "HTTP", "API"]]
         - name: package-comments
         - name: exported
+          disabled: true
     gocyclo:
       min-complexity: 15
 

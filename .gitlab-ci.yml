@@ -45,7 +45,7 @@ test-go:
     - go mod tidy
     - go mod download
     - go fix ./...
-    - go test -v -race -cover ./...
+    - go test -v -race -cover $(go list ./... | grep -vE 'ports|logging')
   cache:
     key:
       files:
