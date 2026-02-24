@@ -1,3 +1,6 @@
+// Package postgre provides the PostgreSQL database adapter implementation.
+// It handles connection management, GORM initialization, and implements
+// the ports.Database interface for the application core.
 package postgre
 
 import (
@@ -73,7 +76,7 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to get generic database object: %w", err)
 	}
 
-	// Ensure database conenction is reachable
+	// Ensure database connection is reachable
 	if err := sqlDB.Ping(); err != nil {
 		return nil, fmt.Errorf("database is unreachable: %w", err)
 	}
