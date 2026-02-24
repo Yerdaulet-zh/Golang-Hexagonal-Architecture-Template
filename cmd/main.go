@@ -12,6 +12,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/cmd/servers"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/broker/kafka"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/logging"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre"
@@ -22,7 +23,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	logger, client, rdb := loadComponents()
+	logger, client, rdb, _ := loadComponents()
 
 	if err := run(ctx, logger, client, rdb); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
@@ -67,7 +68,7 @@ func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *r
 	return nil
 }
 
-func loadComponents() (ports.Logger, *postgre.Client, *redis.Client) {
+func loadComponents() (ports.Logger, *postgre.Client, *redis.Client, ports.Broker) {
 	// Configuration
 	cfg, err := config.NewLoggingConfig()
 	if err != nil {
@@ -103,5 +104,17 @@ func loadComponents() (ports.Logger, *postgre.Client, *redis.Client) {
 	})
 	logger.Info("Successful redis connection")
 
-	return logger, client, rdb
+	// Kafka Configuration Loading
+	logger.Info("Loading Kafka config")
+	kafkaCfg := config.NewKafkaConfig()
+
+	// Initialize Kafka Producer
+	logger.Info("Connecting to Kafka server", "brokers", kafkaCfg.Brokers, "topic", kafkaCfg.Topic)
+	kafkaProducer := kafka.NewProducer(kafkaCfg, logger)
+
+	// segmentio/kafka-go doesn't "connect" immediately;
+	// it opens connections lazily from first Publish.
+	logger.Info("Kafka producer successfully initialized")
+
+	return logger, client, rdb, kafkaProducer
 }
