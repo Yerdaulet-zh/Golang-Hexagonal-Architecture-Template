@@ -25,22 +25,22 @@ func (m *mockDB) Close() error {
 // status code and the correct "OK" response body.
 func TestReadyHandler(t *testing.T) {
 	tests := []struct {
-		name           string
 		mockErr        error
-		expectedStatus int
+		name           string
 		expectedBody   string
+		expectedStatus int
 	}{
 		{
 			name:           "Success - Database is reachable",
+			expectedBody:   "Ready",
 			mockErr:        nil,
 			expectedStatus: http.StatusOK,
-			expectedBody:   "Ready",
 		},
 		{
 			name:           "Failure - Database unreachable",
+			expectedBody:   "Service Unavailable: Database unreachable",
 			mockErr:        fmt.Errorf("connection refused"),
 			expectedStatus: http.StatusServiceUnavailable,
-			expectedBody:   "Service Unavailable: Database unreachable",
 		},
 	}
 
