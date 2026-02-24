@@ -9,8 +9,8 @@ type LoggingConfig struct {
 }
 
 type LokiConfig struct {
-	url    string
 	labels map[string]string
+	url    string
 }
 
 func NewLoggingConfig() (*LoggingConfig, error) {
