@@ -1,39 +1,71 @@
 package handlers
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
+type mockDB struct {
+	pingErr error
+}
+
+func (m *mockDB) Ping(ctx context.Context) error {
+	return m.pingErr
+}
+
+func (m *mockDB) Close() error {
+	return nil
+}
+
 // TestHealthzHandler verifies that the Healthz handler returns a 200 OK
 // status code and the correct "OK" response body.
-func TestHealthzHandler(t *testing.T) {
-	h := NewHealthHandler()
-
-	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
-	w := httptest.NewRecorder()
-
-	h.Healthz(w, req)
-
-	resp := w.Result()
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			t.Error("Failed to close the respose body:", err)
-		}
-	}()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("Failed to read response body: %v", err)
+func TestReadyHandler(t *testing.T) {
+	tests := []struct {
+		name           string
+		mockErr        error
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "Success - Database is reachable",
+			mockErr:        nil,
+			expectedStatus: http.StatusOK,
+			expectedBody:   "Ready",
+		},
+		{
+			name:           "Failure - Database unreachable",
+			mockErr:        fmt.Errorf("connection refused"),
+			expectedStatus: http.StatusServiceUnavailable,
+			expectedBody:   "Service Unavailable: Database unreachable",
+		},
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("expected 200, got %d", resp.StatusCode)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Arrange
+			db := &mockDB{pingErr: tt.mockErr}
+			h := NewHealthHandler(db)
+			req := httptest.NewRequest(http.MethodGet, "/ready", nil)
+			w := httptest.NewRecorder()
 
-	if string(body) != "OK" {
-		t.Errorf("expected 'OK', got %s", string(body))
+			// Act
+			h.Ready(w, req)
+
+			// Assert
+			resp := w.Result()
+			body, _ := io.ReadAll(resp.Body)
+
+			if resp.StatusCode != tt.expectedStatus {
+				t.Errorf("expected status %d, got %d", tt.expectedStatus, resp.StatusCode)
+			}
+
+			if string(body) != tt.expectedBody {
+				t.Errorf("expected body %q, got %q", tt.expectedBody, string(body))
+			}
+		})
 	}
 }
