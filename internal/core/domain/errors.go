@@ -3,6 +3,6 @@ package domain
 import "errors"
 
 var (
-	ErrInvalidDSN       = errors.New("Invalid DSN provided")
-	ErrPostgreSQLOpenDB = errors.New("Error while opening a postgresql database")
+	ErrInvalidDSN       = errors.New("invalid DSN provided")
+	ErrPostgreSQLOpenDB = errors.New("rrror while opening a postgresql database")
 )
