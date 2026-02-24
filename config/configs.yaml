@@ -1,0 +1,28 @@
+http:
+  business_addr: ":8080"
+  management_addr: ":2112"
+
+database:
+  postgres:
+    MaxIdleConns: 10
+    MaxOpenConns: 100
+    ConnMaxLifetime: 1
+    ConnMaxIdleTime: 30
+  gormLogger:
+    SlowThreshold: '1s' # e.g. "200ms", "1s", "2m"
+    LogLevel: "Info"
+    IgnoreRecordNotFoundError: false
+    Colorful: true
+
+tracing:
+  otel_enabed: true
+
+logging:
+  level: debug
+  adapter: "multi" # e.g. stdout, loki or multi.
+  loki: 
+    url: "http://localhost:3100/loki/api/v1/push"
+    labels:
+      container: "api-service"
+      stack: "monitoring"
+      env: "development"
