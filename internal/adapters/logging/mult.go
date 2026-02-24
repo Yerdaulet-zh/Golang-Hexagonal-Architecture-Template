@@ -28,7 +28,7 @@ func (m *multi) Info(msg string, args ...any) {
 
 func (m *multi) Warn(msg string, args ...any) {
 	for _, logger := range m.loggers {
-		logger.Debug(msg, args...)
+		logger.Warn(msg, args...)
 	}
 }
 
