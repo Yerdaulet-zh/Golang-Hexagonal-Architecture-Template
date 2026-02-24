@@ -1,3 +1,6 @@
+// Package config handles application configuration by loading settings
+// from YAML files and environment variables used for logging, redis,
+// and postgresql database initialization.
 package config
 
 import (
