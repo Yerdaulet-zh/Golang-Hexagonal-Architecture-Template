@@ -11,8 +11,8 @@ import (
 )
 
 type lokiAdapter struct {
-	url    string
 	labels map[string]string
+	url    string
 }
 
 func NewLokiLogger(url string, labels map[string]string) ports.Logger {
@@ -49,8 +49,27 @@ func (l *lokiAdapter) send(level, msg string, args ...any) {
 		},
 	}
 
-	body, _ := json.Marshal(lokiMsg)
-	http.Post(l.url, "application/json", bytes.NewBuffer(body))
+	body, err := json.Marshal(lokiMsg)
+	if err != nil {
+		fmt.Printf("logging error: could not marshal loki msg: %v\n", err)
+		return
+	}
+
+	resp, err := http.Post(l.url, "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		fmt.Printf("logging error: failed to send to loki: %v\n", err)
+		return
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			fmt.Printf("Error while closing the loki post response body: %v\n", err)
+		}
+	}()
+
+	if resp.StatusCode >= 400 {
+		fmt.Printf("logging error: loki returned status %d\n", resp.StatusCode)
+	}
 }
 
 func (l *lokiAdapter) Debug(msg string, args ...any) {
