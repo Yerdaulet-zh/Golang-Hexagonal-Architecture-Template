@@ -18,7 +18,7 @@ type Producer struct {
 
 // NewProducer initializes a production-ready Kafka writer using the provided configuration.
 // It bridges the segmentio logger to the application's core logger port.
-func NewProducer(cfg config.KafkaConfig, logger ports.Logger) *Producer {
+func NewProducer(cfg *config.KafkaConfig, logger ports.Logger) *Producer {
 	w := &kafka.Writer{
 		Addr:            kafka.TCP(cfg.Brokers...),
 		Topic:           cfg.Topic,
