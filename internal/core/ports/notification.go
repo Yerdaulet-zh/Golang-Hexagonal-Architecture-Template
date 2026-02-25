@@ -4,5 +4,5 @@ package ports
 import "context"
 
 type Notification interface {
-	Notify(ctx context.Context, email string) error
+	Email(ctx context.Context, email string) error
 }
