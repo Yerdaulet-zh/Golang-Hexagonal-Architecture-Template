@@ -1,3 +1,6 @@
+// Package persistency contains GORM model implementations for database persistence.
+// It acts as a data mapping layer between the physical database schema and
+// the internal domain entities, facilitating the conversion between them.
 package persistency
 
 import (
