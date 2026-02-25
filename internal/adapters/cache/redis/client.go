@@ -1,3 +1,6 @@
+// Package redis provides the implementation for caching and data storage
+// using the Redis key-value store. It acts as a driven adapter in the
+// hexagonal architecture, satisfying infrastructure ports defined by the core.
 package redis
 
 import (
