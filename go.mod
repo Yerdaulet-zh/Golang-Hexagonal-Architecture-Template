@@ -92,6 +92,7 @@ require (
 
 require (
 	ariga.io/atlas-provider-gorm v0.6.0
+	github.com/badoux/checkmail v1.2.4
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/google/uuid v1.6.0
