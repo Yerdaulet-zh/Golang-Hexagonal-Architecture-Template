@@ -5,10 +5,10 @@ package service
 
 import "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 
-type UserService struct {
-	repo ports.User
+type NotificationService struct {
+	repo ports.Notification
 }
 
-func NewUserService(repo ports.User) *UserService {
-	return &UserService{repo: repo}
+func NewUserService(repo ports.Notification) *NotificationService {
+	return &NotificationService{repo: repo}
 }
