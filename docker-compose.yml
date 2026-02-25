@@ -13,8 +13,8 @@ services:
     networks:
       - default
     restart: unless-stopped
-  
-  redis: 
+
+  redis:
     image: redis:8.6.1-alpine
     container_name: redis
     healthcheck:
@@ -29,7 +29,7 @@ services:
     networks:
       - default
     restart: unless-stopped
-  
+
   redis-ui:
     image: redis/redisinsight:latest
     ports:
@@ -37,7 +37,7 @@ services:
     networks:
       - default
     restart: unless-stopped
-  
+
   jmx-exporter-download:
     image: alpine:latest
     container_name: jmx-exporter-downloader
@@ -120,5 +120,5 @@ volumes:
   jmx_shared:
 
 networks:
-  default: 
+  default:
     driver: bridge
