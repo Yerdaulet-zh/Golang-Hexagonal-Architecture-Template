@@ -6,3 +6,7 @@ import "context"
 type Notification interface {
 	Email(ctx context.Context, email string) error
 }
+
+type Validator interface {
+	ValidateEmailHost(email string) error
+}
