@@ -1,3 +1,4 @@
+---
 http:
   business_addr: ":8080"
   management_addr: ":2112"
@@ -9,7 +10,7 @@ database:
     ConnMaxLifetime: 1
     ConnMaxIdleTime: 30
   gormLogger:
-    SlowThreshold: '1s' # e.g. "200ms", "1s", "2m"
+    SlowThreshold: 1s # e.g. "200ms", "1s", "2m"
     LogLevel: "Info"
     IgnoreRecordNotFoundError: false
     Colorful: true
@@ -26,3 +27,21 @@ logging:
       container: "api-service"
       stack: "monitoring"
       env: "development"
+
+broker:
+  kafka:
+    brokers: ["localhost:9092"]
+    topic: "UserNotification"
+    
+    reliability:
+      maxAttempts: 10
+      requiredAcks: -1
+      writeTimeout: 10s
+      readTimeout: 10s
+    
+    performance:
+      batchSize: 100
+      batchTimeout: 1s
+      batchBytes: 1048576 # 1MB in bytes for int64
+      writeBackoffMin: 100ms
+      compression: "snappy"
