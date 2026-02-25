@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"ariga.io/atlas-provider-gorm/gormschema"
-	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre/persistency/notification"
+	persistency "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre/persistency/notification"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -19,7 +19,7 @@ func main() {
 		},
 	}
 	stmts, err := gormschema.New("postgres", gormschema.WithConfig(config)).Load(
-		&notification.EmailNotification{},
+		&persistency.EmailNotification{},
 	)
 
 	if err != nil {
