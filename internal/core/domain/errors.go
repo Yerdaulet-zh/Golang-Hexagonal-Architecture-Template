@@ -7,4 +7,5 @@ var (
 	ErrPostgreSQLOpenDB = errors.New("error while opening a postgresql database")
 
 	ErrInvalidEmailFormat = errors.New("invalid email format")
+	ErrInvalidEmailHost   = errors.New("invalid email host")
 )
