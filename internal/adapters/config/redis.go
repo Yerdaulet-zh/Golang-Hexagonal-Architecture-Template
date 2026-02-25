@@ -8,18 +8,18 @@ import (
 )
 
 type RedisConfig struct {
-	Host     string
-	Port     int
-	Password string
-	DB       int
+	RedisPassword string
+	Host          string
+	Port          int
+	DB            int
 }
 
 func NewRedisCondfig() *RedisConfig {
 	return &RedisConfig{
-		Host:     viper.GetString("cache.redis.host"),
-		Port:     viper.GetInt("cache.redis.port"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       viper.GetInt("cache.redis.db"),
+		RedisPassword: os.Getenv("REDIS_PASSWORD"),
+		Host:          viper.GetString("cache.redis.host"),
+		Port:          viper.GetInt("cache.redis.port"),
+		DB:            viper.GetInt("cache.redis.db"),
 	}
 }
 
