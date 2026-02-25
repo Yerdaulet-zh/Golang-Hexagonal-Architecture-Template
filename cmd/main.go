@@ -13,7 +13,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/cmd/servers"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/broker/kafka"
-	cache "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/cache/redis"
+	redisCache "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/cache/redis"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/logging"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre"
@@ -101,7 +101,7 @@ func loadComponents() (ports.Logger, *postgre.Client, *redis.Client, ports.Broke
 	redisConfig := config.NewRedisCondfig()
 
 	logger.Info("Connecting to redis server")
-	rdb := cache.NewRedisClient(redisConfig)
+	rdb := redisCache.NewRedisClient(redisConfig)
 	logger.Info("Successful redis connection")
 
 	// Kafka Configuration Loading
