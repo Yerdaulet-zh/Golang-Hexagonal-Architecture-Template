@@ -20,6 +20,6 @@ func NewNotificationRepository(db *gorm.DB, logger *ports.Logger) *NotificationR
 	}
 }
 
-func (r *NotificationRepo) Notify(ctx context.Context, email string) error {
+func (r *NotificationRepo) Email(ctx context.Context, email string) error {
 	return gorm.G[persistency.EmailNotification](r.db).Create(ctx, &persistency.EmailNotification{Email: email})
 }
