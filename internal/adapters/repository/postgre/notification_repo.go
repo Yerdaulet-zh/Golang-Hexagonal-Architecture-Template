@@ -3,6 +3,7 @@ package postgre
 import (
 	"context"
 
+	persistency "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre/persistency/notification"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 	"gorm.io/gorm"
 )
@@ -20,5 +21,5 @@ func NewNotificationRepository(db *gorm.DB, logger *ports.Logger) *NotificationR
 }
 
 func (r *NotificationRepo) Notify(ctx context.Context, email string) error {
-	return nil
+	return gorm.G[persistency.EmailNotification](r.db).Create(ctx, &persistency.EmailNotification{Email: email})
 }
