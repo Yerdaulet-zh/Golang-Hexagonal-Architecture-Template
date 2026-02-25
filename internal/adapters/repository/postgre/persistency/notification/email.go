@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
+	domain "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain/notification"
 	"gorm.io/gorm"
 )
 
@@ -20,11 +20,15 @@ type EmailNotification struct {
 }
 
 func (n *EmailNotification) ToDomain() *domain.EmailNotification {
+	var deletedAt *time.Time
+	if n.DeletedAt.Valid {
+		deletedAt = &n.DeletedAt.Time
+	}
 	return &domain.EmailNotification{
 		ID:        n.ID,
 		Email:     n.Email,
 		CreatedAt: n.CreatedAt,
 		UpdatedAt: n.UpdatedAt,
-		DeletedAt: n.DeletedAt,
+		DeletedAt: deletedAt,
 	}
 }
