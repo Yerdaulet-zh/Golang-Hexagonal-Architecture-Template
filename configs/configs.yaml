@@ -45,3 +45,9 @@ broker:
       batchBytes: 1048576 # 1MB in bytes for int64
       writeBackoffMin: 100ms
       compression: "snappy"
+
+cache:
+  redis:
+    host: "localhost"
+    port: 6379
+    DB: 0
