@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type EmailNotification struct {
@@ -12,5 +11,5 @@ type EmailNotification struct {
 	Email     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	DeletedAt *time.Time
 }
