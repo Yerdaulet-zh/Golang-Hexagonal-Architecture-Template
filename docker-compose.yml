@@ -30,6 +30,14 @@ services:
       - default
     restart: unless-stopped
   
+  redis-ui:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    networks:
+      - default
+    restart: unless-stopped
+  
   jmx-exporter-download:
     image: alpine:latest
     container_name: jmx-exporter-downloader
