@@ -8,7 +8,7 @@ import (
 
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
-	pkg "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/pkg/notification"
+	notificationutil "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/pkg/notification"
 )
 
 type NotificationService struct {
@@ -26,7 +26,7 @@ func NewNotificationService(repo ports.Notification, logger ports.Logger, valida
 }
 
 func (n *NotificationService) Email(ctx context.Context, email string, message string) error {
-	if err := pkg.IsValidEmailFormat(email); err != nil {
+	if err := notificationutil.IsValidEmailFormat(email); err != nil {
 		n.logger.Error(domain.LogLevelService, "Error while validation Email Format:", err)
 		return domain.ErrInvalidEmailFormat
 	}
@@ -34,7 +34,7 @@ func (n *NotificationService) Email(ctx context.Context, email string, message s
 		n.logger.Error(domain.LogLevelService, "Error while validation Email Host:", err)
 		return domain.ErrInvalidEmailHost
 	}
-	if !pkg.IsValidLenght(message) {
+	if !notificationutil.IsValidLenght(message) {
 		n.logger.Error(domain.LogLevelService, "Error while validationg Notification Message lenght", domain.ErrInvalidMessageLenght)
 		return domain.ErrInvalidMessageLenght
 	}

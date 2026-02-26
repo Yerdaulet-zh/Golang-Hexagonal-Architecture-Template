@@ -1,7 +1,7 @@
 // Package pkg provides general-purpose utilities and helper functions
 // that are shared across the application but are not tied to any
 // specific business domain or infrastructure.
-package pkg
+package notificationutil
 
 import (
 	"fmt"
