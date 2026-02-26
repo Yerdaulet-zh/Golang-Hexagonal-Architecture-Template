@@ -17,7 +17,9 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/logging"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/repository/postgre"
+	domain "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain/notification"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/service"
 )
 
 func main() {
@@ -50,8 +52,13 @@ func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *r
 
 	// userRepo := postgre.NewUserRepository(client.DB, &logger)
 	// userService := service.NewUserService(userRepo)
+	// notificationService := service.NewUserService(client, logger)
+	// servers.MapBusinessRoutes(Notifi)
+	notificationValidator := domain.NewNotificationValidator()
+	notificationRepo := postgre.NewNotificationRepository(client.GetGormDB(), logger)
+	notificationService := service.NewNotificationService(notificationRepo, logger, notificationValidator)
 
-	// mapBusinessHandler := servers.MapBusinessRoutes(logger, rdb, userService)
+	mapBusinessHandler := servers.MapBusinessRoutes(logger, notificationService)
 	mapManagementRoutes := servers.MapManagementRoutes(logger, client)
 
 	go func() {
@@ -60,7 +67,7 @@ func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *r
 		}
 	}()
 
-	if err := servers.Run(ctx, logger, mapManagementRoutes, httpConfig.HttpBusinessAddr(), "Business"); err != nil { // mapBusinessHandler
+	if err := servers.Run(ctx, logger, mapBusinessHandler, httpConfig.HttpBusinessAddr(), "Business"); err != nil {
 		logger.Error("HTTP Business server error while shutting down", "error", err)
 		os.Exit(1)
 	}
