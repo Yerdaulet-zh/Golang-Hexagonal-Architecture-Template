@@ -14,7 +14,7 @@ func NewNotificationValidator() *Validator {
 
 func (v *Validator) ValidateEmailHost(email string) error {
 	if err := checkmail.ValidateHost(email); err != nil {
-		return fmt.Errorf("Email service validation error: %s", err.Error())
+		return fmt.Errorf("email service validation error: %s", err.Error())
 	}
 	return nil
 }
