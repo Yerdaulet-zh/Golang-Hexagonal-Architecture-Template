@@ -12,12 +12,12 @@ import (
 )
 
 type EmailNotification struct {
-	ID        uuid.UUID      `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Email     string         `gorm:"type:varchar(100);not null"`
-	Message   string         `gorm:"type:varchar(255);not null"`
 	CreatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
 	UpdatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
 	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index"`
+	Email     string         `gorm:"type:varchar(100);not null"`
+	Message   string         `gorm:"type:varchar(255);not null"`
+	ID        uuid.UUID      `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 }
 
 func (n *EmailNotification) ToDomain() *domain.EmailNotification {
