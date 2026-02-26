@@ -6,7 +6,13 @@ import (
 	"github.com/badoux/checkmail"
 )
 
-func ValidateEmailHost(email string) error {
+type Validator struct{}
+
+func NewNotificationValidator() *Validator {
+	return &Validator{}
+}
+
+func (v *Validator) ValidateEmailHost(email string) error {
 	if err := checkmail.ValidateHost(email); err != nil {
 		return fmt.Errorf("Email service validation error: %s", err.Error())
 	}
