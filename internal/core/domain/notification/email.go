@@ -9,10 +9,10 @@ import (
 )
 
 type EmailNotification struct {
-	ID        uuid.UUID
-	Email     string
-	Message   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time
+	Email     string
+	Message   string
+	ID        uuid.UUID
 }
