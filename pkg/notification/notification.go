@@ -12,7 +12,7 @@ import (
 
 func IsValidEmailFormat(email string) error {
 	if err := checkmail.ValidateFormat(email); err != nil {
-		return fmt.Errorf("Email syntax validation error: %s", err.Error())
+		return fmt.Errorf("email syntax validation error: %s", err.Error())
 	}
 	return nil
 }
