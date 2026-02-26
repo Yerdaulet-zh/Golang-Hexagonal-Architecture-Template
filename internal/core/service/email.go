@@ -34,5 +34,5 @@ func (n *NotificationService) Email(ctx context.Context, email string) error {
 		n.logger.Error(domain.LogLevelService, "Error while validation Email Host:", err)
 		return domain.ErrInvalidEmailHost
 	}
-	return nil
+	return n.repo.Email(ctx, email)
 }
