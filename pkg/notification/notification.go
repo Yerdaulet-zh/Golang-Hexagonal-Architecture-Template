@@ -5,6 +5,7 @@ package pkg
 
 import (
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/badoux/checkmail"
 )
@@ -14,4 +15,8 @@ func IsValidEmailFormat(email string) error {
 		return fmt.Errorf("Email syntax validation error: %s", err.Error())
 	}
 	return nil
+}
+
+func IsValidLenght(message string) bool {
+	return utf8.RuneCountInString(message) <= 255
 }
