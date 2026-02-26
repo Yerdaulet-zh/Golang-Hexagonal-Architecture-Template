@@ -1,6 +1,10 @@
 package ports
 
-import "context"
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
 
 // Database defines the set of methods required for infrastructure
 // health checks and connection lifecycle management.
@@ -8,4 +12,5 @@ import "context"
 type Database interface {
 	Ping(ctx context.Context) error
 	Close() error
+	GetGormDB() *gorm.DB
 }
