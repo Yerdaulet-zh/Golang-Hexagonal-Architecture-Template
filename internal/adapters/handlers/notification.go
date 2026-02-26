@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/handlers/common"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/handlers/dto"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/handlers/response"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
@@ -44,9 +44,9 @@ func (h *Notification) EmailNotification(w http.ResponseWriter, r *http.Request)
 	}
 	ctx := r.Context()
 	if err := h.service.Email(ctx, req.Email, req.Message); err != nil {
-		common.MapErrorToResponse(w, err)
+		response.MapErrorToResponse(w, err)
 		return
 	}
 
-	common.WriteSuccess(w, http.StatusCreated, "the email has been sent successfully", nil)
+	response.WriteSuccess(w, http.StatusCreated, "the email has been sent successfully", nil)
 }

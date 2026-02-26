@@ -1,7 +1,7 @@
-// Package common provides shared utilities for the adapter layer,
+// Package response provides shared utilities for the adapter layer,
 // including standardized HTTP response formats and error mapping
 // to ensure consistent API communication.
-package common
+package response
 
 import (
 	"encoding/json"
