@@ -17,9 +17,9 @@ func JSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 type APIResponse struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
+	Message string      `json:"message,omitempty"`
+	Success bool        `json:"success"`
 }
 
 func WriteSuccess(w http.ResponseWriter, status int, message string, data interface{}) {
