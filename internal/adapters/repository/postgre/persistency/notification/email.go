@@ -14,6 +14,7 @@ import (
 type EmailNotification struct {
 	ID        uuid.UUID      `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	Email     string         `gorm:"type:varchar(100);not null"`
+	Message   string         `gorm:"type:varchar(255);not null"`
 	CreatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
 	UpdatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
 	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index"`
@@ -27,6 +28,7 @@ func (n *EmailNotification) ToDomain() *domain.EmailNotification {
 	return &domain.EmailNotification{
 		ID:        n.ID,
 		Email:     n.Email,
+		Message:   n.Message,
 		CreatedAt: n.CreatedAt,
 		UpdatedAt: n.UpdatedAt,
 		DeletedAt: deletedAt,
