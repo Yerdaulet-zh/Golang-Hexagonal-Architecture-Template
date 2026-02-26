@@ -9,7 +9,6 @@ import (
 // MapError translates Domain errors into HTTP responses
 func MapErrorToResponse(w http.ResponseWriter, err error) {
 	switch err {
-
 	// Business Errors
 	case domain.ErrInvalidEmailFormat, domain.ErrInvalidEmailHost:
 		WriteError(w, http.StatusBadRequest, err.Error())
