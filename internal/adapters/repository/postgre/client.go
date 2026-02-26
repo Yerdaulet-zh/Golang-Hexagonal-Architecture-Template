@@ -22,15 +22,6 @@ type Client struct {
 	DB *gorm.DB
 }
 
-func (c *Client) Ping(ctx context.Context) error {
-	sqlDB, err := c.DB.DB()
-	if err != nil {
-		return err
-	}
-
-	return sqlDB.PingContext(ctx)
-}
-
 func NewPostgreSQLClient(cfg *config.DBConfig, logger ports.Logger) (*Client, error) {
 	if cfg.DSN() == "" {
 		return nil, domain.ErrInvalidDSN
@@ -89,10 +80,23 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 	return db, nil
 }
 
+func (c *Client) Ping(ctx context.Context) error {
+	sqlDB, err := c.DB.DB()
+	if err != nil {
+		return err
+	}
+
+	return sqlDB.PingContext(ctx)
+}
+
 func (c *Client) Close() error {
 	sqlDB, err := c.DB.DB()
 	if err != nil {
 		return fmt.Errorf("failed to get sql.DB for closing: %w", err)
 	}
 	return sqlDB.Close()
+}
+
+func (c *Client) GetGormDB() *gorm.DB {
+	return c.DB
 }

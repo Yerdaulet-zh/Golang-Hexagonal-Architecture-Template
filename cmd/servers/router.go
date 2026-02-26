@@ -20,3 +20,11 @@ func MapManagementRoutes(logger ports.Logger, client ports.Database) http.Handle
 	mux.Handle("GET /metrics", promhttp.Handler())
 	return mux
 }
+
+func MapBusinessRoutes(logger ports.Logger, NotificationService ports.NotificationUseCase) http.Handler {
+	mux := http.NewServeMux()
+
+	notification := handlers.NewNotificationHandler(NotificationService, logger)
+	mux.HandleFunc("POST /v1/notification/email", notification.EmailNotification)
+	return mux
+}
