@@ -35,7 +35,7 @@ func (n *NotificationService) Email(ctx context.Context, email string, message s
 		return domain.ErrInvalidEmailHost
 	}
 	if !notificationutil.IsValidLenght(message) {
-		n.logger.Error(domain.LogLevelService, "Error while validationg Notification Message lenght", domain.ErrInvalidMessageLenght)
+		n.logger.Error(domain.LogLevelService, "Error while validationg Notification Message length", domain.ErrInvalidMessageLenght)
 		return domain.ErrInvalidMessageLenght
 	}
 
