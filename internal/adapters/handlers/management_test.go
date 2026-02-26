@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"gorm.io/gorm"
 )
 
 type mockDB struct {
@@ -18,6 +20,10 @@ func (m *mockDB) Ping(ctx context.Context) error {
 }
 
 func (m *mockDB) Close() error {
+	return nil
+}
+
+func (m *mockDB) GetGormDB() *gorm.DB {
 	return nil
 }
 
