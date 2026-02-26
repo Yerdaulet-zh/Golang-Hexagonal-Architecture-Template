@@ -8,7 +8,7 @@ var (
 
 	ErrInvalidEmailFormat   = errors.New("invalid email format")
 	ErrInvalidEmailHost     = errors.New("invalid email host")
-	ErrInvalidMessageLenght = errors.New("invalid message lenght")
+	ErrInvalidMessageLenght = errors.New("invalid message length")
 
 	// Repository
 	ErrDatabaseInternalError = errors.New("database internal error")
