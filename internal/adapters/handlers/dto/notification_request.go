@@ -1,3 +1,6 @@
+// Package dto (Data Transfer Objects) defines the schema for data entering
+// the system via external primary adapters, such as HTTP handlers.
+// It includes logic for request-scoped sanitization and validation tags.
 package dto
 
 import "strings"

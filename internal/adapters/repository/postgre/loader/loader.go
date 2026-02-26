@@ -1,3 +1,7 @@
+// Package main serves as a schema loader for Atlas.
+// It uses the Atlas GORM provider to extract the database schema from
+// GORM models (persistency structs) and output the equivalent SQL
+// statements to stdout, enabling automated database migrations.
 package main
 
 import (
