@@ -29,17 +29,17 @@ func NewNotificationHandler(service ports.NotificationUseCase, logger ports.Logg
 
 func (h *Notification) EmailNotification(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusBadRequest)
+		http.Error(w, "method not allowed", http.StatusBadRequest)
 		return
 	}
 	var req dto.EmailNotification
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid Request Payload", http.StatusBadRequest)
+		http.Error(w, "invalid Request Payload", http.StatusBadRequest)
 		return
 	}
 	req.Sanitize()
 	if err := h.validate.Struct(req); err != nil {
-		http.Error(w, "Invalid Requets Payload", http.StatusBadRequest)
+		http.Error(w, "invalid Requets Payload", http.StatusBadRequest)
 		return
 	}
 	ctx := r.Context()
@@ -48,5 +48,5 @@ func (h *Notification) EmailNotification(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	common.WriteSuccess(w, http.StatusCreated, "The email has been sent successfully", nil)
+	common.WriteSuccess(w, http.StatusCreated, "the email has been sent successfully", nil)
 }
