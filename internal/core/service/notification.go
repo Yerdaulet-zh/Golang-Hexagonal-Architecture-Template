@@ -17,7 +17,7 @@ type NotificationService struct {
 	validator ports.Validator
 }
 
-func NewUserService(repo ports.Notification, logger ports.Logger, validator ports.Validator) *NotificationService {
+func NewNotificationService(repo ports.Notification, logger ports.Logger, validator ports.Validator) *NotificationService {
 	return &NotificationService{
 		repo:      repo,
 		logger:    logger,
