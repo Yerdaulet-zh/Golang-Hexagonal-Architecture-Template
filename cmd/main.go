@@ -10,7 +10,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/redis/go-redis/v9"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/cmd/servers"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/broker/kafka"
 	redisCache "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/cache/redis"
@@ -34,7 +33,7 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *redis.Client) error {
+func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb ports.Redis) error {
 	defer func() {
 		logger.Info("Closing infrastructure connections...")
 		if err := client.Close(); err != nil {
@@ -50,15 +49,12 @@ func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *r
 	httpConfig := config.NewHttpConfig()
 	logger.Info("Successfully loaded HTTP Server config")
 
-	// userRepo := postgre.NewUserRepository(client.DB, &logger)
-	// userService := service.NewUserService(userRepo)
-	// notificationService := service.NewUserService(client, logger)
-	// servers.MapBusinessRoutes(Notifi)
+	// Notification Domain
 	notificationValidator := domain.NewNotificationValidator()
 	notificationRepo := postgre.NewNotificationRepository(client.GetGormDB(), logger)
 	notificationService := service.NewNotificationService(notificationRepo, logger, notificationValidator)
 
-	mapBusinessHandler := servers.MapBusinessRoutes(logger, notificationService)
+	mapBusinessHandler := servers.MapBusinessRoutes(logger, rdb, notificationService)
 	mapManagementRoutes := servers.MapManagementRoutes(logger, client)
 
 	go func() {
@@ -76,7 +72,7 @@ func run(ctx context.Context, logger ports.Logger, client ports.Database, rdb *r
 	return nil
 }
 
-func loadComponents() (ports.Logger, *postgre.Client, *redis.Client, ports.Broker) {
+func loadComponents() (ports.Logger, *postgre.Client, ports.Redis, ports.Broker) {
 	// Configuration
 	cfg, err := config.NewLoggingConfig()
 	if err != nil {
@@ -122,6 +118,5 @@ func loadComponents() (ports.Logger, *postgre.Client, *redis.Client, ports.Broke
 	// segmentio/kafka-go doesn't "connect" immediately;
 	// it opens connections lazily from first Publish.
 	logger.Info("Kafka producer successfully initialized")
-
 	return logger, client, rdb, kafkaProducer
 }
