@@ -7,4 +7,5 @@ const (
 	LogLevelRepository = "Repository"
 	LogLevelService    = "Service"
 	LogLevelHandler    = "Handler"
+	LogLevelMiddleware = "Middleware"
 )
