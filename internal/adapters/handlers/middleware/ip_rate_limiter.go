@@ -1,3 +1,6 @@
+// Package middleware contains HTTP handlers that wrap the core application logic.
+// These handlers provide cross-cutting concerns such as rate limiting, logging,
+// and observability metadata.
 package middleware
 
 import (
