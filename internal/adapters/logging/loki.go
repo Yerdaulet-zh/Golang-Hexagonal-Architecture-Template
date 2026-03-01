@@ -25,21 +25,15 @@ func NewLokiLogger(url string, labels map[string]string) ports.Logger {
 }
 
 func (l *lokiAdapter) send(ctx context.Context, level, msg string, args ...any) {
-	// Extract TraceID and SpanID from context
+	// Extract and Add to log if span exists
 	spanContext := trace.SpanFromContext(ctx).SpanContext()
 
-	var traceID, spanID string
+	var line string
 	if spanContext.HasTraceID() {
-		traceID = spanContext.TraceID().String()
-	}
-	if spanContext.HasSpanID() {
-		spanID = spanContext.SpanID().String()
-	}
-
-	// Start the log line with Trace/Span IDs if they exist
-	line := fmt.Sprintf("level=%s msg=%q", level, msg)
-	if traceID != "" {
-		line = fmt.Sprintf("%s trace_id=%s span_id=%s", line, traceID, spanID)
+		line = fmt.Sprintf("level=%s msg=%q trace_id=%s span_id=%s",
+			level, msg, spanContext.TraceID().String(), spanContext.SpanID().String())
+	} else {
+		line = fmt.Sprintf("level=%s msg=%q", level, msg)
 	}
 
 	// Loop through args to create individual rows/keys
