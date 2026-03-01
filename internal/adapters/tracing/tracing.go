@@ -1,3 +1,8 @@
+// Package tracing provides utilities for initializing and managing OpenTelemetry
+// distributed tracing within the application.
+//
+// It simplifies the setup of the OTLP gRPC exporter, resource attribution,
+// and global tracer provider registration.
 package tracing
 
 import (
