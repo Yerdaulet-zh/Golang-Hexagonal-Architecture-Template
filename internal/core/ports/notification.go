@@ -8,5 +8,5 @@ type Notification interface {
 }
 
 type Validator interface {
-	ValidateEmailHost(email string) error
+	ValidateEmailHost(ctx context.Context, email string) error // Add ctx here
 }

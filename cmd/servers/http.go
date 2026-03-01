@@ -11,7 +11,7 @@ import (
 )
 
 // Run handles the business and management HTTP servers, supporting graceful shutdown.
-func Run(ctx context.Context, logger ports.Logger, handler http.Handler, addr string, serverName string) error {
+func Run(ctx context.Context, logger ports.Logger, handler http.Handler, addr string, gracefullShutdown time.Duration, serverName string) error {
 	s := &http.Server{
 		Addr:           addr,
 		Handler:        handler,
@@ -21,17 +21,17 @@ func Run(ctx context.Context, logger ports.Logger, handler http.Handler, addr st
 	}
 
 	go func() {
-		logger.Info("Starting HTTP "+serverName+" server", "address", s.Addr)
+		logger.Info(ctx, "Starting HTTP "+serverName+" server", "address", s.Addr)
 		if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error("HTTP "+serverName+" server failed", "error", err)
+			logger.Error(ctx, "HTTP "+serverName+" server failed", "error", err)
 		}
 	}()
 
 	<-ctx.Done()
-	logger.Info("Shutting down HTTP " + serverName + " server...")
+	logger.Info(ctx, "Shutting down HTTP "+serverName+" server...")
 
 	// Give the server 5 seconds to finish processing existing requests
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefullShutdown)
 	defer cancel()
 
 	return s.Shutdown(shutdownCtx)

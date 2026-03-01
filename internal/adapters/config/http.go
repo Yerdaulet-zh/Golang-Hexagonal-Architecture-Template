@@ -1,22 +1,21 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 type httpConfig struct {
-	httpManagementAddr string
-	httpBusinessAddr   string
+	HttpManagementAddr string
+	HttpBusinessAddr   string
+	GracefullShutdown  time.Duration
 }
 
 func NewHttpConfig() *httpConfig {
 	return &httpConfig{
-		httpManagementAddr: viper.GetString("http.management_addr"),
-		httpBusinessAddr:   viper.GetString("http.business_addr"),
+		HttpManagementAddr: viper.GetString("http.management_addr"),
+		HttpBusinessAddr:   viper.GetString("http.business_addr"),
+		GracefullShutdown:  viper.GetDuration("http.gracefull_shutdown_duration"),
 	}
-}
-
-func (c *httpConfig) HttpManagementAddr() string {
-	return c.httpManagementAddr
-}
-func (c *httpConfig) HttpBusinessAddr() string {
-	return c.httpBusinessAddr
 }

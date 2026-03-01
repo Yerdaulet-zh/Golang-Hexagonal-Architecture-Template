@@ -6,15 +6,15 @@ package postgre
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/logging" // Added import for your logger adapter
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormlogger "gorm.io/gorm/logger" // Aliased for clarity
 	"gorm.io/gorm/schema"
 )
 
@@ -22,26 +22,29 @@ type Client struct {
 	DB *gorm.DB
 }
 
-func NewPostgreSQLClient(cfg *config.DBConfig, logger ports.Logger) (*Client, error) {
+// NewPostgreSQLClient initializes the GORM client using the provided configuration and custom logger.
+func NewPostgreSQLClient(cfg *config.DBConfig, appLogger ports.Logger) (*Client, error) {
 	if cfg.DSN() == "" {
 		return nil, domain.ErrInvalidDSN
 	}
 
-	db, err := openPostgreSQLDB(cfg)
+	// Pass the appLogger down to the opening logic
+	db, err := openPostgreSQLDB(cfg, appLogger)
 	if err != nil {
-		logger.Error(domain.LogLevelRepository, "Error while opening a new PostgreSQL database with DB configutations", "error", err)
+		appLogger.Error(context.TODO(), domain.LogLevelRepository, "Error while opening a new PostgreSQL database", "error", err)
 		return nil, domain.ErrPostgreSQLOpenDB
 	}
 	return &Client{DB: db}, nil
 }
 
-func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
+func openPostgreSQLDB(cfg *config.DBConfig, appLogger ports.Logger) (*gorm.DB, error) {
 	dialector := postgres.Open(cfg.DSN())
 
-	// Configure GORM logger
-	gormLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags),
-		logger.Config{
+	// Use the custom logging adapter instead of the standard gorm logger
+	// This routes GORM internal logs through logging.NewGormAdapter
+	gormLogger := logging.NewGormAdapter(
+		appLogger,
+		gormlogger.Config{
 			SlowThreshold:             cfg.SlowThreshold(),
 			LogLevel:                  cfg.LogLevel(),
 			IgnoreRecordNotFoundError: cfg.IgnoreRecordNotFoundError(),
@@ -52,13 +55,18 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 	// GORM configuration
 	gormConfig := &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{SingularTable: true},
-		Logger:         gormLogger,
+		Logger:         gormLogger, // Plug in the custom adapter here
 	}
 
 	// Open database connection
 	db, err := gorm.Open(dialector, gormConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open PostgreSQL connection: %w", err)
+	}
+
+	// Enable tracing (otelgorm will use the context from requests to link spans)
+	if err = db.Use(otelgorm.NewPlugin()); err != nil {
+		return nil, fmt.Errorf("failed to register otelgorm plugin: %w", err)
 	}
 
 	// Configure connection pool
@@ -77,18 +85,20 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(cfg.MaxOpenConns())
 	sqlDB.SetConnMaxLifetime(cfg.ConnMaxLifetime())
 	sqlDB.SetConnMaxIdleTime(cfg.ConnMaxIdleTime())
+
 	return db, nil
 }
 
+// Ping checks the health of the database connection.
 func (c *Client) Ping(ctx context.Context) error {
 	sqlDB, err := c.DB.DB()
 	if err != nil {
 		return err
 	}
-
 	return sqlDB.PingContext(ctx)
 }
 
+// Close terminates the database connection pool.
 func (c *Client) Close() error {
 	sqlDB, err := c.DB.DB()
 	if err != nil {
@@ -97,6 +107,7 @@ func (c *Client) Close() error {
 	return sqlDB.Close()
 }
 
+// GetGormDB returns the underlying GORM database instance.
 func (c *Client) GetGormDB() *gorm.DB {
 	return c.DB
 }
