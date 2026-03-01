@@ -10,7 +10,6 @@ import (
 )
 
 type redisRateLimiter struct {
-	logger ports.Logger
 	client ports.Redis
 }
 
