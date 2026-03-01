@@ -2,6 +2,7 @@
 http:
   business_addr: ":8080"
   management_addr: ":2112"
+  gracefull_shutdown_duration: 5s
 
 database:
   postgres:
@@ -21,7 +22,7 @@ tracing:
 logging:
   level: debug
   adapter: "multi" # e.g. stdout, loki or multi.
-  loki: 
+  loki:
     url: "http://localhost:3100/loki/api/v1/push"
     labels:
       container: "api-service"
@@ -32,13 +33,13 @@ broker:
   kafka:
     brokers: ["localhost:9092"]
     topic: "UserNotification"
-    
+
     reliability:
       maxAttempts: 10
       requiredAcks: -1
       writeTimeout: 10s
       readTimeout: 10s
-    
+
     performance:
       batchSize: 100
       batchTimeout: 1s
