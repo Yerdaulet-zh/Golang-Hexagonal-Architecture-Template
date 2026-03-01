@@ -2,10 +2,12 @@
 package logging
 
 import (
+	"context"
 	"log/slog"
 	"os"
 
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // stdoutAdapter is an internal implementation of the ports.Logger interface
@@ -23,18 +25,33 @@ func NewStdoutLogger() ports.Logger {
 	}
 }
 
-func (l *stdoutAdapter) Debug(msg string, args ...any) {
+func (l *stdoutAdapter) appendTraceInfo(ctx context.Context, args []any) []any {
+	spanContext := trace.SpanFromContext(ctx).SpanContext()
+	if spanContext.HasTraceID() {
+		args = append(args,
+			slog.String("trace_id", spanContext.TraceID().String()),
+			slog.String("span_id", spanContext.SpanID().String()),
+		)
+	}
+	return args
+}
+
+func (l *stdoutAdapter) Debug(ctx context.Context, msg string, args ...any) {
+	args = l.appendTraceInfo(ctx, args)
 	l.logger.Debug(msg, args...)
 }
 
-func (l *stdoutAdapter) Info(msg string, args ...any) {
+func (l *stdoutAdapter) Info(ctx context.Context, msg string, args ...any) {
+	args = l.appendTraceInfo(ctx, args)
 	l.logger.Info(msg, args...)
 }
 
-func (l *stdoutAdapter) Warn(msg string, args ...any) {
+func (l *stdoutAdapter) Warn(ctx context.Context, msg string, args ...any) {
+	args = l.appendTraceInfo(ctx, args)
 	l.logger.Warn(msg, args...)
 }
 
-func (l *stdoutAdapter) Error(msg string, args ...any) {
+func (l *stdoutAdapter) Error(ctx context.Context, msg string, args ...any) {
+	args = l.appendTraceInfo(ctx, args)
 	l.logger.Error(msg, args...)
 }
