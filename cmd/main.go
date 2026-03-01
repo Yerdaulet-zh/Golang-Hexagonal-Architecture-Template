@@ -46,7 +46,7 @@ func run(ctx context.Context, logger ports.Logger, tracer *trace.TracerProvider,
 		if err := rdb.Close(); err != nil {
 			logger.Error(ctx, "Redis close error", "error", err)
 		}
-		// Gracefull shutdown of tracer
+		// Graceful shutdown of tracer
 		shutdownCtx, cancelTracer := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancelTracer()
 		if err := tracer.Shutdown(shutdownCtx); err != nil {
