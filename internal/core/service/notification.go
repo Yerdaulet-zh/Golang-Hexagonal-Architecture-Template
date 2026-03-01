@@ -9,6 +9,10 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 	notificationutil "gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/pkg/notification"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type NotificationService struct {
@@ -26,18 +30,33 @@ func NewNotificationService(repo ports.Notification, logger ports.Logger, valida
 }
 
 func (n *NotificationService) Email(ctx context.Context, email string, message string) error {
+	ctx, span := otel.Tracer("notification-service").Start(ctx, "NotificationService.Email")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("notification.email", email),
+	)
+
 	if err := notificationutil.IsValidEmailFormat(email); err != nil {
-		n.logger.Error(domain.LogLevelService, "Error while validation Email Format:", err)
+		n.recordError(ctx, span, "Invalid Email Format", err)
 		return domain.ErrInvalidEmailFormat
 	}
-	if err := n.validator.ValidateEmailHost(email); err != nil {
-		n.logger.Error(domain.LogLevelService, "Error while validation Email Host:", err)
-		return domain.ErrInvalidEmailHost
-	}
+
+	// if err := n.validator.ValidateEmailHost(ctx, email); err != nil {
+	// 	n.recordError(ctx, span, "Invalid Email Host", err)
+	// 	return domain.ErrInvalidEmailHost
+	// }
+
 	if !notificationutil.IsValidLenght(message) {
-		n.logger.Error(domain.LogLevelService, "Error while validationg Notification Message length", domain.ErrInvalidMessageLenght)
+		n.recordError(ctx, span, "Invalid Message Length", domain.ErrInvalidMessageLenght)
 		return domain.ErrInvalidMessageLenght
 	}
 
 	return n.repo.Email(ctx, email, message)
+}
+
+func (n *NotificationService) recordError(ctx context.Context, span trace.Span, msg string, err error) {
+	span.RecordError(err)
+	span.SetStatus(codes.Error, msg)
+	n.logger.Error(ctx, domain.LogLevelService, msg, err)
 }
