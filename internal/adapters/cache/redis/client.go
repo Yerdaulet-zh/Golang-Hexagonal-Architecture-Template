@@ -6,8 +6,10 @@ package redis
 import (
 	"context"
 
+	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
+	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
@@ -15,12 +17,15 @@ type redisAdapter struct {
 	client *redis.Client
 }
 
-func NewRedisClient(cfg *config.RedisConfig) ports.Redis {
+func NewRedisClient(logger ports.Logger, cfg *config.RedisConfig) ports.Redis {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Addr(),
 		Password: cfg.RedisPassword,
 		DB:       cfg.DB,
 	})
+	if err := redisotel.InstrumentTracing(client); err != nil {
+		logger.Error(context.TODO(), domain.LogLevelCache, "Error while enabling tracing:", err.Error())
+	}
 	return &redisAdapter{client: client}
 }
 
