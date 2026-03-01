@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
 
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
@@ -15,8 +16,8 @@ type writerLogger struct {
 func (w *writerLogger) Printf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	if w.isError {
-		w.core.Error(msg, "component", "kafka-writer")
+		w.core.Error(context.TODO(), msg, "component", "kafka-writer")
 	} else {
-		w.core.Debug(msg, "component", "kafka-writer")
+		w.core.Debug(context.TODO(), msg, "component", "kafka-writer")
 	}
 }
