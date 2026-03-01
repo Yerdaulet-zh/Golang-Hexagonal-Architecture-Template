@@ -8,4 +8,5 @@ const (
 	LogLevelService    = "Service"
 	LogLevelHandler    = "Handler"
 	LogLevelMiddleware = "Middleware"
+	LogLevelCache      = "Cache"
 )
