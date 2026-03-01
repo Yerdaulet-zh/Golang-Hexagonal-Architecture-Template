@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
@@ -15,9 +14,8 @@ type redisRateLimiter struct {
 	client ports.Redis
 }
 
-func NewRateLimiter(logger ports.Logger, client ports.Redis) ports.RateLimiter {
+func NewRateLimiter(client ports.Redis) ports.RateLimiter {
 	return &redisRateLimiter{
-		logger: logger,
 		client: client,
 	}
 }
@@ -48,7 +46,6 @@ func (r *redisRateLimiter) Allow(ctx context.Context, key string, window time.Du
 		member,                // ARGV[5]
 	).Int()
 	if err != nil {
-		r.logger.Error(domain.LogLevelMiddleware, "Redis IP limiter error:", err)
 		return true, err
 	}
 
