@@ -1,6 +1,8 @@
 package logging
 
 import (
+	"context"
+
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
 )
 
@@ -14,26 +16,26 @@ func NewMultiLogger(loggers ...ports.Logger) ports.Logger {
 	}
 }
 
-func (m *multi) Debug(msg string, args ...any) {
+func (m *multi) Debug(ctx context.Context, msg string, args ...any) {
 	for _, logger := range m.loggers {
-		logger.Debug(msg, args...)
+		logger.Debug(ctx, msg, args...)
 	}
 }
 
-func (m *multi) Info(msg string, args ...any) {
+func (m *multi) Info(ctx context.Context, msg string, args ...any) {
 	for _, logger := range m.loggers {
-		logger.Info(msg, args...)
+		logger.Info(ctx, msg, args...)
 	}
 }
 
-func (m *multi) Warn(msg string, args ...any) {
+func (m *multi) Warn(ctx context.Context, msg string, args ...any) {
 	for _, logger := range m.loggers {
-		logger.Warn(msg, args...)
+		logger.Warn(ctx, msg, args...)
 	}
 }
 
-func (m *multi) Error(msg string, args ...any) {
+func (m *multi) Error(ctx context.Context, msg string, args ...any) {
 	for _, logger := range m.loggers {
-		logger.Error(msg, args...)
+		logger.Error(ctx, msg, args...)
 	}
 }
