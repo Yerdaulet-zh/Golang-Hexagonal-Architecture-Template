@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/config"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/domain"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
@@ -29,7 +30,7 @@ func NewPostgreSQLClient(cfg *config.DBConfig, logger ports.Logger) (*Client, er
 
 	db, err := openPostgreSQLDB(cfg)
 	if err != nil {
-		logger.Error(domain.LogLevelRepository, "Error while opening a new PostgreSQL database with DB configutations", "error", err)
+		logger.Error(context.TODO(), domain.LogLevelRepository, "Error while opening a new PostgreSQL database with DB configutations", "error", err)
 		return nil, domain.ErrPostgreSQLOpenDB
 	}
 	return &Client{DB: db}, nil
@@ -59,6 +60,11 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 	db, err := gorm.Open(dialector, gormConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open PostgreSQL connection: %w", err)
+	}
+
+	// Enable tracing
+	if err := db.Use(otelgorm.NewPlugin()); err != nil {
+		return nil, fmt.Errorf("failed to register otelgorm plugin: %w", err)
 	}
 
 	// Configure connection pool
