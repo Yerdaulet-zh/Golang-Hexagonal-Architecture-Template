@@ -10,6 +10,8 @@ import (
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/handlers"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/adapters/handlers/middleware"
 	"gitlab.com/yerdaulet.zhumabay/golang-hexagonal-architecture-template/internal/core/ports"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // Defining middleware
@@ -34,16 +36,17 @@ func MapManagementRoutes(logger ports.Logger, client ports.Database) http.Handle
 	return mux
 }
 
-func MapBusinessRoutes(logger ports.Logger, rdb ports.Redis, NotificationService ports.NotificationUseCase) http.Handler {
+func MapBusinessRoutes(logger ports.Logger, tracer *trace.TracerProvider, rdb ports.Redis, NotificationService ports.NotificationUseCase) http.Handler {
 	mux := http.NewServeMux()
 
 	notification := handlers.NewNotificationHandler(NotificationService, logger)
 	mux.HandleFunc("POST /v1/notification/email", notification.EmailNotification)
 
 	// Middlewares
-	rateLimiter := redis.NewRateLimiter(logger, rdb)
+	rateLimiter := redis.NewRateLimiter(rdb)
 	middlewares := []mw{
-		middleware.NewIPRateLimiter(rateLimiter, 100*time.Second, 1),
+		middleware.NewIPRateLimiter(logger, rateLimiter, 100*time.Second, 1),
 	}
-	return applyMiddlewares(mux, middlewares...)
+	handler := applyMiddlewares(mux, middlewares...)
+	return otelhttp.NewHandler(handler, "business-api")
 }
