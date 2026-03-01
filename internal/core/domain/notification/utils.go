@@ -16,7 +16,7 @@ func NewNotificationValidator() *Validator {
 }
 
 func (v *Validator) ValidateEmailHost(ctx context.Context, email string) error {
-	ctx, span := otel.Tracer("domain").Start(ctx, "Validator.ValidateEmailHost")
+	_, span := otel.Tracer("domain").Start(ctx, "Validator.ValidateEmailHost")
 	defer span.End()
 
 	if err := checkmail.ValidateHost(email); err != nil {
