@@ -63,7 +63,7 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 	}
 
 	// Enable tracing
-	if err := db.Use(otelgorm.NewPlugin()); err != nil {
+	if err = db.Use(otelgorm.NewPlugin()); err != nil {
 		return nil, fmt.Errorf("failed to register otelgorm plugin: %w", err)
 	}
 
