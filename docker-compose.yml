@@ -43,18 +43,6 @@ services:
       - default
     restart: unless-stopped
 
-  jmx-exporter-download:
-    image: alpine:latest
-    container_name: jmx-exporter-downloader
-    command: >
-      sh -c "apk add --no-cache wget &&
-             mkdir -p /tmp/shared &&
-             wget -O /tmp/shared/jmx_prometheus_javaagent.jar https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.20.0/jmx_prometheus_javaagent-0.20.0.jar &&
-             echo 'lowercaseOutputName: true' > /tmp/shared/kafka-config.yaml &&
-             echo 'Download complete'"
-    volumes:
-      - jmx_shared:/tmp/shared
-
   broker:
     image: apache/kafka:4.2.0
     container_name: broker
@@ -80,7 +68,7 @@ services:
       - "9101:9101"
     volumes:
       - kafka:/var/lib/kafka/data
-      - jmx_shared:/usr/share/kafka/monitoring
+      - ./configs/kafka:/usr/share/kafka/monitoring
     networks:
       - default
     restart: unless-stopped
