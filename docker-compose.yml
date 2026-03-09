@@ -46,9 +46,6 @@ services:
   broker:
     image: apache/kafka:4.2.0
     container_name: broker
-    depends_on:
-      jmx-exporter-download:
-        condition: service_completed_successfully
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -84,6 +81,30 @@ services:
       KAFKA_CLUSTERS_0_METRICS_PORT: 9101
       KAFKA_CLUSTERS_0_METRICS_TYPE: JMX
       SERVER_SERVLET_CONTEXT_PATH: "/kafka"
+    networks:
+      - default
+
+  connect:
+    image: debezium/connect:2.7.3.Final
+    container_name: connect
+    depends_on:
+      broker:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: broker:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
     networks:
       - default
 
